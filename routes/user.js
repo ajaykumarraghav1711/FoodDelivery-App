@@ -1,4 +1,5 @@
 const express=require("express");
+const mongoose = require("mongoose");
 const router=express.Router();
 const {userModel,validateUser}=require("../models/user");
 router.get("/login",function(req,res){
@@ -18,3 +19,4 @@ router.get("/logout",function(req,res,next){
     
 })
 module.exports=router;
+
