@@ -1,0 +1,160 @@
+// const express=require("express");
+// const router =express.Router();
+// const {cartModel,validateCart}=require("../models/cart");
+// const {validateAdmin,userIsLoggedin}=require("../middlewares/admin");
+// const productModel=require("../models/product");
+// const mongoose=require("mongoose");
+// const product = require("../models/product");
+// router.get("/",userIsLoggedin, async function(req,res){
+
+//  try{
+// let cart=await cartModel.findOne({user:req.session.passport.user}).populate("products");
+// let cartDataStructure={};
+// cartDataStructure.products.forEach((product)=>{
+//     let key=product._id.toString();
+//     if(cartDataStructure[key]){
+//         cartDataStructure[key].quantity+=1;
+
+//     }
+//     else{
+//         cartDataStructure[key]={
+//             ...product._doc,
+
+//         }
+//     }
+// })
+// let finalArray=Object.values(cartDataStructure);
+// let finalprice=cart.totalPrice+34;
+// res.render("cart",{cart:finalArray,finalprice:finalprice,userid:req.session.passport.user});
+ 
+
+//  }
+//  catch(err){
+// res.send(err.message);
+//  }
+// })
+// router.post("/add/:id",userIsLoggedin,async function(req,res){
+//     try{
+//         let cart=await cartModel.find({user:req.seesion.passport.user});
+//         let product=awaitproductModel.findOne({_id:req.params.id});
+//         if(!cart){
+
+//             cart=await cartModel.create({
+//                 user:req.session.passport.user,
+//                 products:[req.params.id],
+//                 totalPrice:Number(product.price)
+
+//             })
+//         }
+//         else{
+//             cart.products.push(req.params.id);
+//             cart.totalPrice=cart.totalPrice+Number(product.price);
+//             await cart.save();
+//         }
+//         res.redirect("back");
+//     }
+//     catch(err){
+//         res.send(err.message);
+//     }
+// })
+
+// router.get("/remove/:id",userIsLoggedin, async function(req,res){
+//     try{
+//         let cart=await cartModel.findOne({user:req.session.passport.user});
+//         if(!cart) return res.send("something went wrog while removing products");
+//         else{
+//             let prodId=cart.products.indexOf(req.params.id);
+//             cart.products.splice(prodId,1);
+//             cart.totalPrice=cart.totalPrice-Number(product.price);
+ 
+//         await cart.save();}
+//         res.redirct("back");
+    
+// }
+//     catch(err){
+//  res.send(err.message);
+//     }
+// })
+
+// module.exports=router;
+const express = require("express");
+const router = express.Router();
+const { cartModel, validateCart } = require("../models/cart");
+const { validateAdmin, userIsLoggedIn } = require("../middlewares/admin");
+const {productModel} = require("../models/product");
+const mongoose = require("mongoose");
+
+router.get("/", userIsLoggedIn, async function (req, res) {
+    try {
+        let cart = await cartModel.findOne({ user: req.session.passport.user }).populate("products");
+        if (!cart) return res.render("cart", { cart: [], finalprice: 0, userid: req.session.passport.user });
+
+        let cartDataStructure = {}; // Correctly initializing
+
+        cart.products.forEach((product) => {
+            let key = product._id.toString();
+            if (cartDataStructure[key]) {
+                cartDataStructure[key].quantity += 1;
+            } else {
+                cartDataStructure[key] = {
+                    ...product._doc,
+                    quantity: 1, // Adding quantity
+                };
+            }
+        });
+
+        let finalArray = Object.values(cartDataStructure);
+        let finalprice = cart.totalPrice + 34;
+        res.render("cart", { cart: finalArray, finalprice: finalprice, userid: req.session.passport.user });
+
+    } catch (err) {
+        res.send(err.message);
+    }
+});
+
+router.get("/add/:id", userIsLoggedIn, async function (req, res) {
+    try {
+        let cart = await cartModel.findOne({ user: req.session.passport.user });
+        let product = await productModel.findOne({ _id: req.params.id });
+
+        if (!cart) {
+            cart = await cartModel.create({
+                user: req.session.passport.user,
+                products: [req.params.id],
+                totalPrice: Number(product.price),
+            });
+        } else {
+            cart.products.push(req.params.id);
+            cart.totalPrice = cart.totalPrice + Number(product.price);
+            await cart.save();
+        }
+        res.redirect(req.get("Referrer") || "/");
+
+
+    } catch (err) {
+        res.send(err.message);
+    }
+});
+
+router.get("/remove/:id", userIsLoggedIn, async function (req, res) {
+    try {
+        let cart = await cartModel.findOne({ user: req.session.passport.user });
+        if (!cart) return res.send("Something went wrong while removing products.");
+
+        let product = await productModel.findOne({ _id: req.params.id }); // Fix: Fetch product
+
+        let prodIndex = cart.products.indexOf(req.params.id);
+        if (prodIndex !== -1) {
+            cart.products.splice(prodIndex, 1);
+            cart.totalPrice -= Number(product.price);
+            await cart.save();
+        }
+        res.redirect(req.get("Referrer") || "/");
+
+
+    } catch (err) {
+        res.send(err.message);
+    }
+});
+
+module.exports = router;
