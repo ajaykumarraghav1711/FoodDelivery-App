@@ -1,83 +1,4 @@
-// const express=require("express");
-// const router =express.Router();
-// const {cartModel,validateCart}=require("../models/cart");
-// const {validateAdmin,userIsLoggedin}=require("../middlewares/admin");
-// const productModel=require("../models/product");
-// const mongoose=require("mongoose");
-// const product = require("../models/product");
-// router.get("/",userIsLoggedin, async function(req,res){
-
-//  try{
-// let cart=await cartModel.findOne({user:req.session.passport.user}).populate("products");
-// let cartDataStructure={};
-// cartDataStructure.products.forEach((product)=>{
-//     let key=product._id.toString();
-//     if(cartDataStructure[key]){
-//         cartDataStructure[key].quantity+=1;
-
-//     }
-//     else{
-//         cartDataStructure[key]={
-//             ...product._doc,
-
-//         }
-//     }
-// })
-// let finalArray=Object.values(cartDataStructure);
-// let finalprice=cart.totalPrice+34;
-// res.render("cart",{cart:finalArray,finalprice:finalprice,userid:req.session.passport.user});
- 
-
-//  }
-//  catch(err){
-// res.send(err.message);
-//  }
-// })
-// router.post("/add/:id",userIsLoggedin,async function(req,res){
-//     try{
-//         let cart=await cartModel.find({user:req.seesion.passport.user});
-//         let product=awaitproductModel.findOne({_id:req.params.id});
-//         if(!cart){
-
-//             cart=await cartModel.create({
-//                 user:req.session.passport.user,
-//                 products:[req.params.id],
-//                 totalPrice:Number(product.price)
-
-//             })
-//         }
-//         else{
-//             cart.products.push(req.params.id);
-//             cart.totalPrice=cart.totalPrice+Number(product.price);
-//             await cart.save();
-//         }
-//         res.redirect("back");
-//     }
-//     catch(err){
-//         res.send(err.message);
-//     }
-// })
-
-// router.get("/remove/:id",userIsLoggedin, async function(req,res){
-//     try{
-//         let cart=await cartModel.findOne({user:req.session.passport.user});
-//         if(!cart) return res.send("something went wrog while removing products");
-//         else{
-//             let prodId=cart.products.indexOf(req.params.id);
-//             cart.products.splice(prodId,1);
-//             cart.totalPrice=cart.totalPrice-Number(product.price);
- 
-//         await cart.save();}
-//         res.redirct("back");
-    
-// }
-//     catch(err){
-//  res.send(err.message);
-//     }
-// })
-
-// module.exports=router;
-const express = require("express");
+ const express = require("express");
 const router = express.Router();
 const { cartModel, validateCart } = require("../models/cart");
 const { validateAdmin, userIsLoggedIn } = require("../middlewares/admin");
@@ -104,7 +25,7 @@ router.get("/", userIsLoggedIn, async function (req, res) {
         });
 
         let finalArray = Object.values(cartDataStructure);
-        let finalprice = cart.totalPrice + 34;
+        let finalprice = cart.totalPrice + 20;
         res.render("cart", { cart: finalArray, finalprice: finalprice, userid: req.session.passport.user });
 
     } catch (err) {
@@ -135,6 +56,24 @@ router.get("/add/:id", userIsLoggedIn, async function (req, res) {
         res.send(err.message);
     }
 });
+router.get('/cart', async (req, res) => {
+    try {
+        const cart = await Cart.find({ user: req.user._id }).populate('items.product');
+        
+        // Ensure preCheckoutItems is defined, even if empty
+        const preCheckoutItems = await Product.find({ recommended: true }).limit(5); 
+
+        res.render('cart', {
+            cart: cart.items || [],
+            preCheckoutItems: preCheckoutItems || [],  // Ensure it's always an array
+            userid: req.user._id
+        });
+    } catch (error) {
+        console.error("Error fetching cart:", error);
+        res.status(500).send("Internal Server Error");
+    }
+});
+
 
 router.get("/remove/:id", userIsLoggedIn, async function (req, res) {
     try {
@@ -156,5 +95,10 @@ router.get("/remove/:id", userIsLoggedIn, async function (req, res) {
         res.send(err.message);
     }
 });
+router.get("/delivery",function(req,res){
+    alert("Order reached in 10 minutes");
+    
+})
 
 module.exports = router;
+

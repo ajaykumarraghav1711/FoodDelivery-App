@@ -70,12 +70,12 @@ passport.use(new GoogleStrategy({
 
 console.log("Google Client ID:", process.env.GOOGLE_CLIENT_ID); // Debugging
 
-// ✅ Corrected serializeUser
+ 
 passport.serializeUser(function(user, cb) {
     cb(null, user._id); // Pass only the ID
 });
 
-// ✅ Corrected deserializeUser
+ 
 passport.deserializeUser(async function(id, cb) {
     try {
         let user = await userModel.findById(id);

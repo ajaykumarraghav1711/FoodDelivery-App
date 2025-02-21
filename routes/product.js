@@ -24,7 +24,7 @@ router.get("/", userIsLoggedIn,async function(req,res){
     ]);
    let cart= await cartModel.findOne({user:req.session.passport.user});
    if(cart && cart.products.length>0) somethingInCart=true;
-    let rnproducts=await productModel.aggregate([{$sample :{size:3}}]);
+    let rnproducts=await productModel.aggregate([{$sample :{size:7}}]);
 
 
     const resultObject = resultArray.reduce((acc, item) => {

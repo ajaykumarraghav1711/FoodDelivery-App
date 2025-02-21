@@ -2,8 +2,7 @@ const express=require("express");
 const app=express();
 
 const path=require("path");
-app.set("view engine","ejs");
-app.set("views", path.join(__dirname, "views"));
+
 const passport=require("passport");
 const indexRouter=require("./routes");
  const authRouter=require("./routes/auth");
@@ -20,6 +19,8 @@ const cookieParser=require("cookie-parser");
 require("dotenv").config();
 require("./config/mongoose");
 require("./config/passport")
+app.set("view engine","ejs");
+app.set("views", path.join(__dirname, "views"));
 
 const expressSession=require("express-session");
 const payment = require("./models/payment");

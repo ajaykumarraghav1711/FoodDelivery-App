@@ -6,6 +6,7 @@ const passport = require("passport");
 router.get("/google",
     passport.authenticate("google",{
         scope: ["profile","email"],
+        
     })
     ,function(req,res){
 

@@ -36,7 +36,8 @@
                                 <p class="mx-2">
                                     <%= elem.quantity %>
                                 </p>
-                                <button class="px-2 py-1 rounded"><i class="ri-add-line"></i></button>
+                                <a href="/cart/add/<%= elem._id %>" class="px-2 py-1 rounded"><i
+                                    class="ri-add-line"></i></a>
                             </div>
                             <div class="flex gap-2 mt-4">
                                 <p class="text-gray-500 line-through">₹<%= Number(elem.price)*Number(elem.quantity)+20
@@ -50,44 +51,7 @@
                     <% })%>
             </div>
 
-            <!-- Before You Checkout -->
-            <div class="bg-white p-4 rounded-lg shadow mb-4">
-                <h2 class="text-lg font-semibold">Before you checkout</h2>
-                <div class="flex space-x-4 mt-4">
-                    <div class="flex flex-col items-center">
-                        <img src="https://www.bigbasket.com/media/uploads/p/xxl/40015993_11-uncle-chips-spicy-treat.jpg"
-                            alt="Product Image" class="h-24 rounded">
-                        <p class="text-sm text-center mt-2">Uncle Chipps Spicy Treat Flavour Potato Chips</p>
-                        <p class="text-xs text-gray-500">48 g</p>
-                        <button class="bg-green-700 text-white px-4 py-1 rounded mt-2">ADD</button>
-                        <p class="text-xs mt-2">₹20</p>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <img src="https://m.media-amazon.com/images/I/61mQ-Q7HmCL._AC_UF1000,1000_QL80_.jpg"
-                            alt="Product Image" class="h-24 rounded">
-                        <p class="text-sm text-center mt-2">Coca-Cola Soft Drink (300 ml)</p>
-                        <p class="text-xs text-gray-500">300 ml</p>
-                        <button class="bg-green-700 text-white px-4 py-1 rounded mt-2">ADD</button>
-                        <p class="text-xs mt-2">₹40</p>
-                    </div>
-                    <div class="flex flex-col items-center">
-                        <img src="https://www.dorita.se/media/catalog/product/9/0/900179-lay-s-saltet-potetgull-175g.jpg"
-                            alt="Product Image" class="h-24 rounded">
-                        <p class="text-sm text-center mt-2">Chheda's Golden Banana Chips (Rock Salt)</p>
-                        <p class="text-xs text-gray-500">170 g</p>
-                        <button class="bg-green-700 text-white px-4 py-1 rounded mt-2">ADD</button>
-                        <p class="text-xs mt-2">₹85</p>
-                        <p class="text-xs text-red-500">16% OFF</p>
-                    </div>
-                </div>
-                <div class="mt-4 text-center text-white bg-green-700 py-5 px-10 rounded-md">
-                    <h1 class="text-xl font-semibold">Get FREE delivery</h1>
-                    <p class="text-xs">Add products worth ₹236 more</p>
-                    <button
-                        class="text-sm bg-zinc-200 text-black px-10 py-3 rounded-xl font-semibold capitalize mt-6">See
-                        all coupons</button>
-                </div>
-            </div>
+            
 
             <!-- Bill Details -->
             <div class="bg-white p-4 rounded-lg shadow mb-4">
@@ -189,31 +153,36 @@
         <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.7.1/jquery.min.js"
             integrity="sha512-v2CJ7UaYy4JwqLDIrZUI/4hqeoQieOmAZNXBeQyjo21dadnwR+8ZaIJVT8EE2iyI61OV8e6M8PP2/4hpQINQ/g=="
             crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+        
         <script>
+            const userid = "<%= userid %>"; // Ensure userid is available
+        
             document.querySelector('.paybtn').onclick = function (e) {
+                e.preventDefault(); // Prevent default before API call
+                
                 axios.post('/payment/create/orderId')
                     .then(function (response) {
                         var options = {
-                            "key":"rzp_zp_test_RnurYC6ax6uHTf", // Enter the Key ID generated from the Dashboard
-                            "amount": response.data.amount, // Amount in currency subunits. Default currency is INR.
-                            "currency": response.data.currency,
+                            "key": "<%= process.env.RAZORPAY_KEY_ID %>", // Secure API key usage
+                            "amount": response.data.order.amount,
+                            "currency": response.data.order.currency,
                             "name": "BlinkIt",
                             "description": "Test Transaction",
                             "image": "https://example.com/your_logo",
-                            "order_id": response.data.id,
+                            "order_id": response.data.order.id,
                             "handler": function (response) {
                                 axios.post('/payment/api/payment/verify', {
-                                    razorpayOrderId: response.razorpay_order_id,
-                                    razorpayPaymentId: response.razorpay_payment_id,
-                                    signature: response.razorpay_signature
+                                    razorpay_order_id: response.razorpay_order_id,
+                                    razorpay_payment_id: response.razorpay_payment_id,
+                                    razorpay_signature: response.razorpay_signature
                                 })
-                                    .then(function (response) {
-                                        let { razorpayOrderId, razorpayPaymentId, signature } = JSON.parse(response.config.data)
-                                        window.location.href = `/order/<%= userid %>/${razorpayOrderId}/${razorpayPaymentId}/${signature}`
-                                    })
-                                    .catch(function (error) {
-                                        console.error(error);
-                                    });
+                                .then(function (verifyResponse) {
+                                    let { razorpay_order_id, razorpay_payment_id, razorpay_signature } = JSON.parse(verifyResponse.config.data);
+                                    window.location.href = `/order/<%= userid %>/${razorpay_order_id}/${razorpay_payment_id}/${razorpay_signature}`;
+                                })
+                                .catch(function (error) {
+                                    console.error(error);
+                                });
                             },
                             "prefill": {
                                 "name": "Harsh Sharma",
@@ -227,6 +196,7 @@
                                 "color": "#3399cc"
                             }
                         };
+        
                         var rzp1 = new Razorpay(options);
                         rzp1.on('payment.failed', function (response) {
                             alert('Payment Failed');
@@ -238,14 +208,15 @@
                             alert('Order ID: ' + response.error.metadata.order_id);
                             alert('Payment ID: ' + response.error.metadata.payment_id);
                         });
+        
                         rzp1.open();
-                        e.preventDefault();
                     })
                     .catch(function (error) {
                         console.error(error);
                     });
             };
         </script>
+        
     </body>
 
     <%- include('./partials/footer'); %>
