@@ -185,8 +185,8 @@
                                 });
                             },
                             "prefill": {
-                                "name": "Harsh Sharma",
-                                "email": "harsh.sharma@example.com",
+                                "name": "Ajay Raghav",
+                                "email": "ajay@123.com",
                                 "contact": "9000090000"
                             },
                             "notes": {
@@ -200,13 +200,7 @@
                         var rzp1 = new Razorpay(options);
                         rzp1.on('payment.failed', function (response) {
                             alert('Payment Failed');
-                            alert('Error Code: ' + response.error.code);
-                            alert('Description: ' + response.error.description);
-                            alert('Source: ' + response.error.source);
-                            alert('Step: ' + response.error.step);
-                            alert('Reason: ' + response.error.reason);
-                            alert('Order ID: ' + response.error.metadata.order_id);
-                            alert('Payment ID: ' + response.error.metadata.payment_id);
+                       
                         });
         
                         rzp1.open();

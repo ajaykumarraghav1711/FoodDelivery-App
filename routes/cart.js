@@ -26,6 +26,8 @@ router.get("/", userIsLoggedIn, async function (req, res) {
 
         let finalArray = Object.values(cartDataStructure);
         let finalprice = cart.totalPrice + 20;
+     
+
         res.render("cart", { cart: finalArray, finalprice: finalprice, userid: req.session.passport.user });
 
     } catch (err) {
@@ -60,12 +62,12 @@ router.get('/cart', async (req, res) => {
     try {
         const cart = await Cart.find({ user: req.user._id }).populate('items.product');
         
-        // Ensure preCheckoutItems is defined, even if empty
+      
         const preCheckoutItems = await Product.find({ recommended: true }).limit(5); 
 
         res.render('cart', {
             cart: cart.items || [],
-            preCheckoutItems: preCheckoutItems || [],  // Ensure it's always an array
+            preCheckoutItems: preCheckoutItems || [],   
             userid: req.user._id
         });
     } catch (error) {

@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Order Confirmation</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css">
+</head>
+<body class="flex items-center justify-center min-h-screen bg-gradient-to-r from-purple-400 to-blue-500">
+    <div class="bg-white p-8 rounded-3xl shadow-2xl max-w-lg text-center transform scale-105">
+        <svg class="text-green-500 w-20 h-20 mx-auto" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m0 5a9 9 0 11-18 0 9 9 0 0118 0z"/></svg>
+        <h1 class="text-3xl font-extrabold text-gray-900 mt-4">Order Confirmed!</h1>
+        <p class="text-gray-700 mt-2 text-lg">Thank you for your purchase. Your order has been successfully placed.</p>
+        
+        <div class="mt-6 p-5 border-2 border-dashed border-gray-300 rounded-xl bg-gray-50 text-left">
+            <p class="font-semibold text-gray-900 text-lg">Order <span class="text-blue-600"></span></p>
+            <p class="text-gray-700 mt-2">Estimated Delivery: <span class="font-medium text-green-600"> Your product is on the way</span></p>
+        </div>
+
+        <svg class="text-blue-500 w-16 h-16 mx-auto mt-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 10h11M9 21h6M3 6h18M3 14h18m0 4h-6m-6 0H3"/></svg>
+        <p class="text-gray-700 mt-2 text-lg"> Hope you enjoy our service</p>
+        
+        <div class="mt-6 flex flex-col gap-4">
+            <!-- <a href="/order/map" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 rounded-xl text-center text-lg shadow-md">Track Order</a> -->
+            <a href="/" class="w-full bg-gray-300 hover:bg-gray-400 text-gray-900 font-bold py-3 rounded-xl text-center text-lg shadow-md">Continue Shopping</a>
+        </div>
+    </div>
+</body>
+</html>
